@@ -1,6 +1,7 @@
 import pandas as pd
 import random
 
+print('test')
 def match_making(team_id, points, team_played):
     #team_id: a list of teams
     #points: a list of points for each team
