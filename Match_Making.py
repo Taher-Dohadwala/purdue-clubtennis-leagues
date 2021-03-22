@@ -1,6 +1,7 @@
 import pandas as pd
 import random
 import gspread
+from datetime import date
 
 '''Getting the Data from Google Sheets'''
 def get_data():
@@ -11,6 +12,7 @@ def get_data():
     team_id = df["Team Number"]
     score = df["Total Score"]
     teams_played = df["Teams Played"]
+    teams_played = teams_played.astype(str)
     for i in range(len(teams_played)):
         teams_played[i] = teams_played[i].split(",")
     team_id = list(team_id)
@@ -71,17 +73,38 @@ def match_making(team_id, points, team_played):
                         break
     
     #creating dataframe
-    df = pd.DataFrame(list(zip(team_one, team_two)), columns = ["Team One", "Team Two"])
-    return df
+    #df = pd.DataFrame(list(zip(team_one, team_two)), columns = ["Team One", "Team Two"])
+    return team_one, team_two
+
+def contact_info(team_one, team_two):
+    gc = gspread.service_account(filename='service_account.json')
+    # Open a sheet from a spreadsheet in one go
+    wks = gc.open('Team info').sheet1
+    contact_df = wks.get_all_records()
+    team_one_info = []
+    team_two_info = []
+    for i in range(len(team_one)):
+        #team one info
+        team = team_one[i]
+        team_one_info.append((contact_df[team - 1]['Team Captian'], contact_df[team - 1]['Phone Number']))
+        #team two info
+        team = team_two[i]
+        team_two_info.append((contact_df[team - 1]['Team Captian'], contact_df[team - 1]['Phone Number']))
+    
+    match_df = pd.DataFrame(list(zip(map(str, team_one_info), team_one, team_two, map(str, team_two_info))), columns = ["Team One Contact Info", "Team One", "Team Two", "Team Two Contact Info"])
+    return match_df
 
 '''Writing Weekly Matchups to Sheets'''
 def weekly_matchups(df):
     gc = gspread.service_account(filename='service_account.json')
     # Open a sheet from a spreadsheet in one go
     wks = gc.open('Weekly Matches').sheet1
-    wks.update([df.columns.values.tolist()] + df.values.tolist())
+    wks.update('A1', "Week of " + str(date.today().strftime("%B %d") + "st Matches"))
+    wks.update('A2', [df.columns.values.tolist()] + df.values.tolist())
 
-team_id, score, teams_played = get_data()
-df = match_making(team_id, score, teams_played)
-weekly_matchups(df)
-print("Updated Weekly Matchups")
+def main():
+    team_id, score, teams_played = get_data()
+    team_one, team_two = match_making(team_id, score, teams_played)
+    match_df = contact_info(team_one, team_two)
+    weekly_matchups(match_df)
+    print("Updated Weekly Matchups")
