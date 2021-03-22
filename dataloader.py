@@ -1,4 +1,3 @@
-# team id, point value, who they played
 
 """
 Google Drive setup:
@@ -11,9 +10,7 @@ Google Drive setup:
 """
 TODO:
 1. read from score reporting and update main
-    a. Read in data based on week
-
-** all reporting score info will be saved **
+2. Clear score reporting sheet
 """
 
 import gspread
@@ -23,7 +20,6 @@ def read_reporting(sr):
     winner = sr.col_values(2)[1:]
     loser = sr.col_values(3)[1:]
     score = sr.col_values(4)[1:]
-    print(winner,loser,score)
     loser_score = [int(x.split("-")[1]) for x in score]
 
     return winner,loser,loser_score
@@ -34,7 +30,7 @@ def read_main(main):
     
 def nice_manual_check(winner,loser,loser_score):
     for i in range(len(winner)):
-        print(f"Team {winner[i]} won +16 and played {loser[i]}\nTeam {loser[i]} lost + {loser_score[i]} and played {winner[i]}")
+        print(f"Team {winner[i]} won +16 and played {loser[i]}\nTeam {loser[i]} lost +{loser_score[i]} and played {winner[i]}")
     
 def update_main(sr,main):
     winner,loser,loser_score = read_reporting(sr)
@@ -79,16 +75,14 @@ def clear_score_reporting(sr):
         print("Score Reporting NOT cleared")
         
     
-def update_main_and_clear_sr(sr,main):
+def update_main_and_clear_sr():
+    gc = gspread.service_account(filename='service_account.json')
+    sr = gc.open('Score Reporting').get_worksheet(0)
+    main = gc.open('Main').get_worksheet(0)
     update_main(sr,main)
     clear_score_reporting(sr)
     print("Ready for matchmaking")
     
-#read_reporting()
-if __name__ == "__main__":
-    gc = gspread.service_account(filename='service_account.json')
-    sr = gc.open('Score Reporting').get_worksheet(0)
 
-    # main = gc.open('Main').get_worksheet(0)
-    # update_main(sr,main)
-    clear_score_reporting(sr)
+if __name__ == "__main__":
+    pass

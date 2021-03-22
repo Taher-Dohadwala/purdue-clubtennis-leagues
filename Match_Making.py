@@ -99,10 +99,11 @@ def weekly_matchups(df):
     gc = gspread.service_account(filename='service_account.json')
     # Open a sheet from a spreadsheet in one go
     wks = gc.open('Weekly Matches').sheet1
-    wks.update('A1', "Week of " + str(date.today().strftime("%B %d") + "st Matches"))
+    #wks.update('A1', "Week of " + str(date.today().strftime("%B %d") + "st Matches"))
+    wks.update('A1', "Matches for week of " + str(date.today().strftime("%B %d")))
     wks.update('A2', [df.columns.values.tolist()] + df.values.tolist())
 
-def main():
+def assign_matches_and_update_weeklymatches():
     team_id, score, teams_played = get_data()
     team_one, team_two = match_making(team_id, score, teams_played)
     match_df = contact_info(team_one, team_two)
