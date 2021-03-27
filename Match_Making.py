@@ -10,7 +10,7 @@ def get_data():
     wks = gc.open('Main').sheet1
     df = pd.DataFrame(wks.get_all_records())
     team_id = df["Team Number"]
-    score = df["Total Score"]
+    score = df["Weighted Score"]
     teams_played = df["Teams Played"]
     teams_played = teams_played.astype(str)
     for i in range(len(teams_played)):
