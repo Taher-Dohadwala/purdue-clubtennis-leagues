@@ -10,7 +10,7 @@ def get_data():
     wks = gc.open('Main').sheet1
     df = pd.DataFrame(wks.get_all_records())
     team_id = df["Team Number"]
-    score = df["Total Score"]
+    score = df["Weighted Score"]
     teams_played = df["Teams Played"]
     teams_played = teams_played.astype(str)
     for i in range(len(teams_played)):
@@ -107,5 +107,13 @@ def assign_matches_and_update_weeklymatches():
     team_id, score, teams_played = get_data()
     team_one, team_two = match_making(team_id, score, teams_played)
     match_df = contact_info(team_one, team_two)
-    weekly_matchups(match_df)
-    print("Updated Weekly Matchups")
+    print("New Matches")
+    print(match_df)
+    answer = input("Send new matches to drive (y/n): ")
+    if answer =="y":
+        weekly_matchups(match_df)
+        print("Updated Weekly Matchups")
+    else:
+        print("Matches NOT sent")
+    
+    
