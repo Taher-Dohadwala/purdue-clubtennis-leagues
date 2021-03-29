@@ -88,10 +88,11 @@ def clear_score_reporting(sr):
         print("Score Reporting NOT cleared")
         
     
-def update_main_and_clear_sr():
+def update_main_and_clear_sr(test=False):
     gc = gspread.service_account(filename='service_account.json')
     sr = gc.open('Score Reporting').get_worksheet(0)
     main = gc.open('Main').get_worksheet(0)
+    
     update_main(sr,main)
     clear_score_reporting(sr)
     print("Ready for matchmaking")

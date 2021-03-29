@@ -107,5 +107,13 @@ def assign_matches_and_update_weeklymatches():
     team_id, score, teams_played = get_data()
     team_one, team_two = match_making(team_id, score, teams_played)
     match_df = contact_info(team_one, team_two)
-    weekly_matchups(match_df)
-    print("Updated Weekly Matchups")
+    print("New Matches")
+    print(match_df)
+    answer = input("Send new matches to drive (y/n): ")
+    if answer =="y":
+        weekly_matchups(match_df)
+        print("Updated Weekly Matchups")
+    else:
+        print("Matches NOT sent")
+    
+    
