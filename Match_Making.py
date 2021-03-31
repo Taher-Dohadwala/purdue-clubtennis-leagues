@@ -9,7 +9,7 @@ def get_data():
     # Open a sheet from a spreadsheet in one go
     wks = gc.open('Main').sheet1
     df = pd.DataFrame(wks.get_all_records())
-    team_id = df["Team Number"]
+    team_id = df["Team Number"].astype("string")
     score = df["Weighted Score"]
     teams_played = df["Teams Played"]
     teams_played = teams_played.astype(str)
@@ -84,12 +84,11 @@ def contact_info(team_one, team_two):
     team_one_info = []
     team_two_info = []
     for i in range(len(team_one)):
-        #team one info
-        team = team_one[i]
-        team_one_info.append((contact_df[team - 1]['Team Captian'], contact_df[team - 1]['Phone Number']))
+        team = int(team_one[i])
+        team_one_info.append( f"{contact_df[team - 1]['Team Captian']}: {contact_df[team - 1]['Phone Number']}")
         #team two info
-        team = team_two[i]
-        team_two_info.append((contact_df[team - 1]['Team Captian'], contact_df[team - 1]['Phone Number']))
+        team = int(team_two[i])
+        team_two_info.append(f"{contact_df[team - 1]['Team Captian']}: {contact_df[team - 1]['Phone Number']}")
     
     match_df = pd.DataFrame(list(zip(map(str, team_one_info), team_one, team_two, map(str, team_two_info))), columns = ["Team One Contact Info", "Team One", "Team Two", "Team Two Contact Info"])
     return match_df
