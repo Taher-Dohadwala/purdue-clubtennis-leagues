@@ -24,28 +24,29 @@ def read_reporting(sr):
     loser = sr.col_values(3)[1:]
     score = sr.col_values(4)[1:]
     score_difference = [(int(x.split("-")[0])-int(x.split("-")[1])) for x in score]
+    winner_score = [int(x.split("-")[0]) for x in score]
     loser_score = [int(x.split("-")[1]) for x in score]
 
-    return winner,loser,loser_score,score_difference
+    return winner,loser,winner_score,loser_score,score_difference
 
-def nice_manual_check(winner,loser,loser_score,score_difference):
+def nice_manual_check(winner,loser,winner_score,loser_score,score_difference):
     for i in range(len(winner)):
-        print(f"Team {winner[i]} won: Total score +{16}, Weighted Score +{score_difference[i]} and played {loser[i]}\nTeam {loser[i]} lost: Total Score +{loser_score[i]}, Weighted Score -{score_difference[i]} and played Team {winner[i]}")
+        print(f"Team {winner[i]} won: Total score +{winner_score[i]}, Weighted Score +{score_difference[i]} and played {loser[i]}\nTeam {loser[i]} lost: Total Score +{loser_score[i]}, Weighted Score -{score_difference[i]} and played Team {winner[i]}")
     
 def update_main(sr,main):
-    winner,loser,loser_score,score_difference = read_reporting(sr)
+    winner,loser,winner_score,loser_score,score_difference = read_reporting(sr)
     df = pd.DataFrame(main.get_all_records())
     df["Teams Played"] = df["Teams Played"].astype("string")
     print("Old Main")
     print(df)
     
     print("Expected Changes")
-    nice_manual_check(winner,loser,loser_score,score_difference)
+    nice_manual_check(winner,loser,winner_score,loser_score,score_difference)
     
     for i in range(len(winner)):
         # update main for winning team
         prev_win = df.loc[df["Team Number"]==int(winner[i]),"Total Score"].values[0]
-        df.loc[df["Team Number"] == int(winner[i]),"Total Score"] = prev_win + 16
+        df.loc[df["Team Number"] == int(winner[i]),"Total Score"] = prev_win + winner_score[i]
         
         win_tp = df.loc[df["Team Number"]==int(winner[i]),"Teams Played"].values[0]
         df.loc[df["Team Number"] == int(winner[i]),"Teams Played"] = win_tp  + ","+ str(loser[i])
